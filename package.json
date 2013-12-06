@@ -1,0 +1,30 @@
+{
+  "name": "node-appcache-generator",
+  "version": "0.0.0",
+  "main": "lib/node-appcache-generator.js",
+  "description": "Simple node module to generate APPCACHE files from a directory",
+  "homepage": "https://github.com/arcturus/node-appcache-generator",
+  "bugs": "https://github.com/arcturus/node-appcache-generator/issues",
+  "author": {
+    "name": "Francisco Jordano",
+    "email": "francisco@jordano.es",
+    "url": "http://www.ardeenelinfierno.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arcturus/node-appcache-generator"
+  },
+  "licenses": [
+    {
+      "type": "MPL 2.0"
+    }
+  ],
+  "devDependencies": {
+    "grunt-contrib-jshint": "~0.7.0",
+    "grunt-contrib-nodeunit": "~0.2.0",
+    "grunt-contrib-watch": "~0.5.0",
+    "load-grunt-tasks": "~0.2.0",
+    "time-grunt": "~0.2.0",
+    "jshint-stylish": "~0.1.3"
+  }
+}
