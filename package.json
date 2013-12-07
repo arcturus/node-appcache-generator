@@ -16,7 +16,8 @@
   },
   "licenses": [
     {
-      "type": "MPL 2.0"
+      "type": "MPL 2.0",
+      "url": "https://github.com/arcturus/node-appcache-generator/blob/master/LICENSE"
     }
   ],
   "scripts": {
