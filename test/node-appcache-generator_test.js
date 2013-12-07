@@ -78,5 +78,32 @@ exports.appcache = {
       test.ok(fallbackIndex > indexFallback);
     });
     test.done();
+  },
+  version: function(test) {
+    var generator = new appcache.Generator(this.sources, this.network,
+      this.fallback);
+    var output = generator.generate();
+
+    var VERSION = 'version ';
+
+    var indexVersion = output.indexOf(VERSION);
+    test.ok(indexVersion > -1);
+    var indexNL = output.indexOf(generator.NL, indexVersion);
+    test.ok(indexNL > -1);
+    var start = indexVersion + VERSION.length;
+    var length = indexNL - start;
+    test.ok(length > 0);
+    var manifestVersion = output.substr(start, length);
+
+    var date = new Date(manifestVersion);
+    var now = new Date();
+
+    test.ok(date.year === now.year);
+    test.ok(date.month === now.moth);
+    test.ok(date.day === date.day);
+
+    // Difference between dates shouldn't be that big
+    test.ok((now.getTime() - date.getTime()) < 5 * 1000);
+    test.done();
   }
 };
