@@ -1,6 +1,7 @@
 'use strict';
 
 var appcache = require('../lib/node-appcache-generator.js');
+var proxyquire = require('proxyquire');
 
 exports.appcache = {
   setUp: function(done) {
@@ -105,5 +106,29 @@ exports.appcache = {
     // Difference between dates shouldn't be that big
     test.ok((now.getTime() - date.getTime()) < 5 * 1000);
     test.done();
+  },
+  recursive: function(test) {
+    var self = this;
+    var dir = './projects/html5/myproject';
+    var proxy = proxyquire('../lib/node-appcache-generator.js',
+      {
+        'recursive-readdir': function(dirName, cb) {
+          test.equal(dir, dirName);
+
+          cb(null, self.sources);
+        }
+      }
+    );
+
+    var generator = new proxy.Generator([], [], []);
+    generator.generateFromDir(dir, function(err, output) {
+      test.ok(output.length > 0);
+      test.ok(output.indexOf('CACHE MANIFEST') !== -1);
+      test.ok(output.indexOf('version') !== -1);
+      test.ok(output.indexOf('CACHE:') !== -1);
+      test.ok(output.indexOf('NETWORK:') !== -1);
+      test.ok(output.indexOf('FALLBACK:') !== -1);
+      test.done();
+    });
   }
 };
