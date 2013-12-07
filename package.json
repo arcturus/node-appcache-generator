@@ -1,6 +1,6 @@
 {
   "name": "node-appcache-generator",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "main": "lib/node-appcache-generator.js",
   "description": "Simple node module to generate APPCACHE files from a directory",
   "homepage": "https://github.com/arcturus/node-appcache-generator",

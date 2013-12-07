@@ -1,36 +1,82 @@
 'use strict';
 
-var node-appcache-generator = require('../lib/node-appcache-generator.js');
+var appcache = require('../lib/node-appcache-generator.js');
 
-/*
-  ======== A Handy Little Nodeunit Reference ========
-  https://github.com/caolan/nodeunit
-
-  Test methods:
-    test.expect(numAssertions)
-    test.done()
-  Test assertions:
-    test.ok(value, [message])
-    test.equal(actual, expected, [message])
-    test.notEqual(actual, expected, [message])
-    test.deepEqual(actual, expected, [message])
-    test.notDeepEqual(actual, expected, [message])
-    test.strictEqual(actual, expected, [message])
-    test.notStrictEqual(actual, expected, [message])
-    test.throws(block, [error], [message])
-    test.doesNotThrow(block, [error], [message])
-    test.ifError(value)
-*/
-
-exports.node-appcache-generator = {
+exports.appcache = {
   setUp: function(done) {
+    this.sources = [
+      'index.html',
+      'styles/style.css',
+      'images/image.png',
+      'offline.html'
+    ];
+    this.network = [
+      '*'
+    ];
+    this.fallback = [
+      '/ /offline.html'
+    ];
     // setup here
     done();
   },
-  'no args': function(test) {
-    test.expect(1);
-    // tests here
-    test.equal(node-appcache-generator.awesome(), 'awesome', 'should be awesome.');
+  empty: function(test) {
+    var generator = new appcache.Generator([], [], []);
+    var output = generator.generate();
+    test.ok(output.length > 0);
+    test.ok(output.indexOf('CACHE MANIFEST') !== -1);
+    test.ok(output.indexOf('version') !== -1);
+    test.ok(output.indexOf('CACHE:') !== -1);
+    test.ok(output.indexOf('NETWORK:') !== -1);
+    test.ok(output.indexOf('FALLBACK:') !== -1);
+    test.done();
+  },
+  cacheSection: function(test) {
+    var generator = new appcache.Generator(this.sources, [], []);
+    var output = generator.generate();
+    var indexCache = output.indexOf('CACHE:');
+    var indexNetwork = output.indexOf('NETWORK:');
+
+    test.ok(indexCache > -1);
+    test.ok(indexNetwork > -1);
+
+    this.sources.forEach(function onSources(s) {
+      var sourceIndex = output.indexOf(s);
+      test.ok(sourceIndex > -1);
+      test.ok(sourceIndex > indexCache);
+      test.ok(sourceIndex < indexNetwork);
+    });
+    test.done();
+  },
+  networkSection: function(test) {
+    var generator = new appcache.Generator(this.sources, this.network, []);
+    var output = generator.generate();
+    var indexNetwork = output.indexOf('NETWORK:');
+    var indexFallback = output.indexOf('FALLBACK:');
+
+    test.ok(indexFallback > -1);
+    test.ok(indexNetwork > -1);
+
+    this.network.forEach(function onNetwork(n) {
+      var networkIndex = output.indexOf(n);
+      test.ok(networkIndex > -1);
+      test.ok(networkIndex > indexNetwork);
+      test.ok(networkIndex < indexFallback);
+    });
+    test.done();
+  },
+  fallbackSection: function(test) {
+    var generator = new appcache.Generator(this.sources, this.network,
+      this.fallback);
+    var output = generator.generate();
+
+    var indexFallback = output.indexOf('FALLBACK:');
+
+    test.ok(indexFallback > -1);
+    this.fallback.forEach(function onFallback(f) {
+      var fallbackIndex = output.indexOf(f);
+      test.ok(fallbackIndex > -1);
+      test.ok(fallbackIndex > indexFallback);
+    });
     test.done();
   }
 };
