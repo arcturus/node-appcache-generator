@@ -23,6 +23,9 @@
   "scripts": {
     "test": "grunt nodeunit"
   },
+  "bin": {
+    "node-appcache": "./bin/node-appcache"
+  },
   "dependencies": {
     "recursive-readdir": "0.0.2",
     "commander": "2.1.0",

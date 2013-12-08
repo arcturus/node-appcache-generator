@@ -35,6 +35,10 @@ program
   .option('-f, --fallback <fallback>', 'file containing the fallback rules', readFromFile, [])
   .parse(process.argv);
 
+if (process.argv.length == 2) {
+  program.help();
+}
+
 
 var generator = new nodeAppCache.Generator(null, program.network, program.fallback);
 generator.generateFromDir(program.directory, function(err, content) {
