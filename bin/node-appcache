@@ -1,0 +1,48 @@
+#!/usr/bin/env node
+
+var fs = require('fs');
+var colors = require('colors');
+var program = require('commander');
+var lazy = require('lazy');
+var nodeAppCache = require('../lib/node-appcache-generator.js');
+
+function readFromFile(fileName) {
+  var lines = [];
+  try {
+    new lazy(fs.createReadStream(fileName))
+      .lines
+      .forEach(function(line) {
+        console.log('leyendo ' + line);
+        lines.push(line);
+      }
+    );
+  } catch(e) {
+    console.log('Problem reading file ' + fileName + ': ' + e + ''.red.bold);
+    process.exit(1);
+  }
+
+  return lines;
+}
+
+var version = JSON.parse(
+  fs.readFileSync(__dirname + '/../package.json', 'utf8')).version;
+
+program
+  .version(version)
+  .option('-m, --manifest <manifest>', 'specify the manifest file name [manifest.appcache]', String, 'manifest.appcache')
+  .option('-d, --directory <directory>', 'directory to build the manifest from [.]', String, '.')
+  .option('-n, --network <network>', 'file containing the network rules', readFromFile, [])
+  .option('-f, --fallback <fallback>', 'file containing the fallback rules', readFromFile, [])
+  .parse(process.argv);
+
+
+var generator = new nodeAppCache.Generator(null, program.network, program.fallback);
+generator.generateFromDir(program.directory, function(err, content) {
+  fs.writeFile(program.manifest, content, function(err2) {
+      if(err2) {
+          console.log(err + ''.red.bold);
+      } else {
+          console.log('Cache saved to ' + program.manifest + ''.green.bold);
+      }
+  }); 
+});
